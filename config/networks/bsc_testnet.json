@@ -1,0 +1,7 @@
+{
+  "NETWORK_NAME": "BSC TESTNET",
+  "BRIDGE_ADDRESS": "0x7Cd2B4C3D0C292D843830cedB26691Fd2071282e",
+  "RPC_URL": "https://bsc-testnet.nodereal.io/v1/38470031e9f94a6e8804a7523bb422f5",
+  "EXPLORER_URL": "https://testnet.bscscan.com/",
+  "START_BLOCK": 19531204
+}

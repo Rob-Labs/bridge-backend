@@ -1,0 +1,7 @@
+{
+  "NETWORK_NAME": "ROPSTEN",
+  "BRIDGE_ADDRESS": "0x7d6d1f1a84560Ab6fE69306cAc0D6C094146d942",
+  "RPC_URL": "https://ropsten.infura.io/v3/f90ab6263c6c418ab6012477bdadbccf",
+  "EXPLORER_URL": "https://ropsten.etherscan.io/",
+  "START_BLOCK": 12288359
+}
