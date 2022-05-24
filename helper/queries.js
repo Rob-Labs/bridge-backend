@@ -23,7 +23,7 @@ module.exports.InsertBulkSwapData = async (data) => {
 };
 
 module.exports.SetRedeemTxHash = async (data) => {
-  let update_query = `UPDATE \`bridge_transaction\` SET \`toTxhash\` = ${data.toTxhash} WHERE \`txhash\` = ${data.txhash} AND \`fromChainId\` = ${data.fromChainId}`;
+  let update_query = `UPDATE \`bridge_transaction\` SET \`toTxhash\` = '${data.toTxhash}' WHERE \`txhash\` = '${data.txhash}' AND \`fromChainId\` = '${data.fromChainId}'`;
 
   try {
     const res = await query(update_query);
@@ -34,7 +34,7 @@ module.exports.SetRedeemTxHash = async (data) => {
 };
 
 module.exports.UpdateJobId = async (data) => {
-  let update_query = `UPDATE \`bridge_transaction\` SET \`bull_job_id\` = ${data.bull_job_id} WHERE \`txhash\` = ${data.txhash} AND \`fromChainId\` = ${data.fromChainId}`;
+  let update_query = `UPDATE \`bridge_transaction\` SET \`bull_job_id\` = '${data.bull_job_id}' WHERE \`txhash\` = '${data.txhash}' AND \`fromChainId\` = '${data.fromChainId}'`;
 
   try {
     const res = await query(update_query);
@@ -44,8 +44,12 @@ module.exports.UpdateJobId = async (data) => {
   }
 };
 
-module.exports.UpdateJobStatus = async (data) => {
-  let update_query = `UPDATE \`bridge_transaction\` SET \`bull_job_status\` = ${data.bull_job_id} WHERE \`txhash\` = ${data.txhash} AND \`fromChainId\` = ${data.fromChainId}`;
+module.exports.UpdateJobStatus = async (
+  bull_job_status,
+  txhash,
+  fromChainId
+) => {
+  let update_query = `UPDATE \`bridge_transaction\` SET \`bull_job_status\` = ${bull_job_status} WHERE \`txhash\` = '${txhash}' AND \`fromChainId\` = '${fromChainId}'`;
 
   try {
     const res = await query(update_query);
@@ -56,7 +60,7 @@ module.exports.UpdateJobStatus = async (data) => {
 };
 
 module.exports.SetFinishRedeem = async (data) => {
-  let update_query = `UPDATE \`bridge_transaction\` SET \`is_mined\` = ${data.is_mined} WHERE \`txhash\` = ${data.txhash} AND \`fromChainId\` = ${data.fromChainId}`;
+  let update_query = `UPDATE \`bridge_transaction\` SET \`is_mined\` = 1 WHERE \`txhash\` = '${data.txhash}' AND \`fromChainId\` = '${data.fromChainId}'`;
 
   try {
     const res = await query(update_query);
