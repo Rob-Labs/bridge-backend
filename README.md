@@ -1,5 +1,7 @@
 # BRIDGE BACKEND
 
+This app is for listening swap event and make auto redeem on destination chain, this application only supported for bridge contract at this repository https://github.com/Rob-Labs/bridge
+
 ## INSTALLATION
 
 ### Requirements
