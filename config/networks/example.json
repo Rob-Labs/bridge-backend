@@ -1,0 +1,7 @@
+{
+  "NETWORK_NAME": "Name of network",
+  "BRIDGE_ADDRESS": "your bridge address",
+  "RPC_URL": "JSON RPC url of network",
+  "EXPLORER_URL": "address network blockchain explorer",
+  "START_BLOCK": "block number bridge genesis (deployed)"
+}
