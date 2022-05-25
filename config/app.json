@@ -1,0 +1,6 @@
+{
+  "swap_event_name": "LogSwap",
+  "redeem_event_name": "LogRedeem",
+  "block_check_request": 1000,
+  "block_check_interval": 30
+}

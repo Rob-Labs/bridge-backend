@@ -1,0 +1,7 @@
+{
+  "NETWORK_NAME": "BSC TESTNET",
+  "BRIDGE_ADDRESS": "0xB64841df3CEfD7303596f8ca9ce9C7F2477f218B",
+  "RPC_URL": "https://speedy-nodes-nyc.moralis.io/c926eb4268b1d11e276a2d1e/bsc/testnet",
+  "EXPLORER_URL": "https://testnet.bscscan.com/",
+  "START_BLOCK": 19555496
+}
