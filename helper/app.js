@@ -1,6 +1,6 @@
 const fs = require("fs");
 const Web3 = require("web3");
-const bridgeABI = require("../abi/Bridge.json");
+const bridgeABI = require("../config/abi/Bridge.json");
 const Parse = require("./cli_parser");
 const args = Parse(process.argv);
 

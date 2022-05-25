@@ -6,9 +6,14 @@ const {
   block_check_interval,
 } = require("../config/app.json");
 const { SwapEventParser } = require("../helper/events_parser");
-const { InsertBulkSwapData } = require("../helper/queries");
 const { AddSwapQueue } = require("../helper/queue");
 const { SetLastBlock, GetLastBlock } = require("../helper/last_block_checker");
+/**
+ * DB
+ */
+require("../models/db");
+const { default: mongoose } = require("mongoose");
+const Swap = mongoose.model("Swap");
 const CURRENT_NETWORK = String(args.network).toUpperCase();
 
 const main = async () => {
@@ -30,19 +35,30 @@ const main = async () => {
     toBlock: toBlockChecked,
   });
 
-  let swapEventdata = [];
   for (let i = 0; i < swapEvents.length; i++) {
     const parsedEvent = SwapEventParser(swapEvents[i]);
-    swapEventdata.push(parsedEvent);
     console.log(
       `Incoming SWAP event from ${CURRENT_NETWORK} ${parsedEvent.txhash} `
     );
+    /**
+     * @TODO Insert to mongodb
+     */
+    try {
+      const res = await Swap.create(parsedEvent);
+      if (res) console.log(`success add to db`);
+    } catch (error) {
+      if (error.message.includes("E11000 duplicate key error")) {
+        console.log(`WARN : swap data already recorded`);
+      } else {
+        console.error(error);
+      }
+    }
+
+    AddSwapQueue(parsedEvent);
   }
 
   try {
     // add to queue and database
-    await InsertBulkSwapData(swapEventdata);
-    AddSwapQueue(swapEventdata);
   } catch (error) {
     throw error;
   }

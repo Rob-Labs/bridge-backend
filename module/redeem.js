@@ -1,11 +1,10 @@
 const { bootRedeem, args } = require("../helper/app");
 const { web3, bridge } = bootRedeem();
-const {
-  SetFinishRedeem,
-  SetRedeemTxHash,
-  UpdateJobId,
-  UpdateJobStatus,
-} = require("../helper/queries");
+
+require("../models/db");
+const { default: mongoose } = require("mongoose");
+const Swap = mongoose.model("Swap");
+
 const Queue = require("bull");
 const RedeemQueue = new Queue("RedeemBackend", process.env.REDIS_URL);
 
@@ -27,10 +26,10 @@ const PerformRedeem = async (job, done) => {
     amount,
   } = job.data.data;
 
-  await UpdateJobId({
-    txhash: txhash,
-    fromChainId: fromChainId,
-    bull_job_id: job.id,
+  // update job Id
+  await Swap.find({ txhash: txhash, fromChainId: fromChainId }).updateOne({
+    bullJobId: job.id,
+    proceccedOn: Date.now(),
   });
 
   const { address: validator } = web3.eth.accounts.wallet[0];
@@ -44,9 +43,28 @@ const PerformRedeem = async (job, done) => {
       tx.estimateGas({ from: validator }),
     ]);
   } catch (error) {
-    // just mark done for job
-    // and we will requeue again if needed
-    done();
+    if (error.message.includes("Redeem already processed")) {
+      console.log(`WARNING : Redeem already processed`);
+      // just pass done, because it's already redeemed
+      // and we wan't to requeue job
+      done();
+    }
+
+    if (error.message.includes("DENIED : Not Validator")) {
+      console.log(`ERROR : Check your private key, are you correct validator?`);
+      // set bull job to failed
+      // we need to requeue job
+      done(
+        new Error("ERROR : Check your private key, are you correct validator?")
+      );
+      process.exit(1);
+    } else {
+      /**
+       * @TODO check for posible error
+       */
+      console.log(error.message);
+      done();
+    }
   }
 
   try {
@@ -60,19 +78,21 @@ const PerformRedeem = async (job, done) => {
         console.log(
           `Sending Redeem Tx ${txhash} to ${CURRENT_NETWORK} blockchain network ${tempTxHash}, waiting for confirmation...`
         );
-        await SetRedeemTxHash({
-          toTxhash: hash,
-          txhash: txhash,
-          fromChainId: fromChainId,
-        });
+        await Swap.find({ txhash: txhash, fromChainId: fromChainId }).updateOne(
+          {
+            toTxHash: hash,
+            redeemedOn: Date.now(),
+          }
+        );
       })
       .on("receipt", async (receipt) => {
-        await SetFinishRedeem({
-          txhash: txhash,
-          fromChainId: fromChainId,
-        });
         console.log(
           `Redeem Tx ${txhash} has been processed, check this redeem tx ${CONFIG.EXPLORER_URL}tx/${receipt.transactionHash}`
+        );
+        await Swap.find({ txhash: txhash, fromChainId: fromChainId }).updateOne(
+          {
+            minedOn: Date.now(),
+          }
         );
         done();
       })
@@ -87,15 +107,6 @@ const PerformRedeem = async (job, done) => {
 console.log(`Redeem process booted .....`);
 
 const main = async () => {
-  console.log(`checking given privatekey ..`);
-
-  const bridgeValidator = await bridge.methods.validator().call();
-  const { address: validator } = web3.eth.accounts.wallet[0];
-
-  if (bridgeValidator != validator) {
-    console.error(`VALIDATOR NOT MATCH : Check Your Private Key`);
-    process.exit();
-  }
   console.log(`Processing Redeem Job from Queue....`);
   RedeemQueue.process(CURRENT_NETWORK, PerformRedeem);
 };
