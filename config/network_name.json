@@ -2,6 +2,5 @@
   "1": "ETH",
   "3": "ROPSTEN",
   "56": "BSC",
-  "97": "BSC_TESTNET",
-  "100000": "NO_NAME"
+  "97": "BSC_TESTNET"
 }
